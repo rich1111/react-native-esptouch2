@@ -42,44 +42,87 @@ This is a Unofficial project. The official demo is below:
   	```
 
 
+## Additional react native modules needed for getting location service permission
+react-native-permissions
+react-native-android-location-service
+
 ## Usage
 ```javascript
+
+import React, {Component} from 'react';
+import {Platform, StyleSheet, Text, Button, View, DeviceEventEmitter} from 'react-native';
 import RNEsptouch from 'react-native-esptouch2';
+import Permissions from 'react-native-permissions';
+import RNAndroidLocationService from 'react-native-android-location-service';
 
-class Demo extends React.Component {
-	constructor(props) {
-		super(props);
-		this.onPress = this.onPress.bind(this);
-	}
+export default class App extends Component {
+    constructor(props) {
+        super(props);
+        this.onPress = this.onPress.bind(this);
+    }
+    state = {
+        lng: 0.0,
+        lat: 0.0,
+    };
 
-	componentDidMount() {
-		RNEsptouch.initESPTouch();
-	}
+    //request permission to access location
+    requestPermission = () => {
+        Permissions.request('location')
+            .then(response => {
+                //returns once the user has chosen to 'allow' or to 'not allow' access
+                //response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
+                this.setState({ locationPermission: response })
+            });
+    };
 
-	componentWillUnmount() {
-		RNEsptouch.finish();
-	}
+    onLocationChange(e) {
+        this.setState({
+            lng: e.Longitude,
+            lat: e.Latitude
+        });
+    }
 
-	onPress() {
-		let connected_wifi_password = "123456";
-		let broadcast_type = 1;	// 1: broadcast;	0: multicast
-		RNEsptouch.startSmartConfig(connected_wifi_password, broadcast_type).then((res) => {
-			if (res.code == 200) {
-				// ESPTouch success
-			} else {
-				// ESPTouch failed
-				console.info(res.msg)
-			}
-		})
-	}
+    componentDidMount() {
+        this.requestPermission();
+        if (!this.eventEmitter) {
+            // Register Listener Callback - has to be removed later
+            this.eventEmitter = DeviceEventEmitter.addListener('updateLocation', this.onLocationChange.bind(this));
+            // Initialize RNGLocation
+            RNAndroidLocationService.getLocation();
+        }
 
-	render() {
-		return (
-			<View>
-				<Button title="test" onPress={this.onPress} />
-			</View>
-		)
-	}
+        RNEsptouch.initESPTouch();
+    }
+
+    componentWillUnmount() {
+        // Stop listening for Events
+        this.eventEmitter.remove();
+
+        RNEsptouch.finish();
+    }
+
+    onPress() {
+        let connected_wifi_password = "12345678";
+        let broadcast_type = 1;	// 1: broadcast;	0: multicast
+        RNEsptouch.startSmartConfig(connected_wifi_password, broadcast_type).then((res) => {
+            if (res.code == 200) {
+                // ESPTouch success
+                console.log(res)
+            } else {
+                // ESPTouch failed
+                console.info(res.msg)
+            }
+        })
+    }
+
+    render() {
+        return (
+            <View>
+                <Text>Lng: {this.state.lng} Lat: {this.state.lat}</Text>
+                <Button title="test" onPress={this.onPress} />
+            </View>
+        )
+    }
 }
 
 ```

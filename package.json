@@ -21,4 +21,8 @@
   "peerDependencies": {
     "react-native": "^0.41.2"
   }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rich1111/react-native-esptouch2.git"
+  },
 }
