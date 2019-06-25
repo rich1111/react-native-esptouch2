@@ -88,9 +88,10 @@ export default class App extends Component {
             // Register Listener Callback - has to be removed later
             this.eventEmitter = DeviceEventEmitter.addListener('updateLocation', this.onLocationChange.bind(this));
             // Initialize RNGLocation
-            RNAndroidLocationService.getLocation();
+            if (Platform.OS === 'android') {
+                RNAndroidLocationService.getLocation();
+            }
         }
-
         RNEsptouch.initESPTouch();
     }
 
