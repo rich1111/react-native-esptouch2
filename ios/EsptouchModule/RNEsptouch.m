@@ -68,7 +68,11 @@
                 if ([firstResult isSuc])
                 {   // 配网成功
                     RCTLog(@"======>ESPTouch success");
-                    NSDictionary *res = @{@"code":@"200",@"msg":@"ESPTouch success"};
+                    NSString *ipAddrDataStr = [ESP_NetUtil descriptionInetAddr4ByData:firstResult.ipAddrData];
+                    if (ipAddrDataStr==nil) {
+                        ipAddrDataStr = [ESP_NetUtil descriptionInetAddr6ByData:firstResult.ipAddrData];
+                    }
+                    NSDictionary *res = @{@"code":@"200",@"msg":@"ESPTouch success",@"bssid":firstResult.bssid,@"ip":ipAddrDataStr};
                     resolve(res);
                 }
                 
