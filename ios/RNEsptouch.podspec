@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.description  = <<-DESC
                   RNEsptouch
                    DESC
-  s.homepage     = ""
+  s.homepage     = "https://github.com/rich1111/react-native-esptouch2"
   s.license      = "MIT"
   # s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
   s.author             = { "author" => "author@domain.cn" }
